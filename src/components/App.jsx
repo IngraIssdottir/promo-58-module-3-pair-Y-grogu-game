@@ -1,6 +1,10 @@
+import React, { useState } from "react";
 import "../styles/App.scss";
 import Header from "./Header";
 import Board from "./layout/Board"
+import Dice from "./Dice";
+
+
 
 
 function App() {
@@ -22,38 +26,96 @@ function App() {
   1. Volver a poner los datos a su valor inicial.
   */
 
+ // Estado del juego
+  const [position, setPosition] = useState(0);
+  const [cookies, setCookies] = useState(3);
+  const [eggs, setEggs] = useState(3);
+  const [frogs, setFrogs] = useState(3);
+  const [gameStatus, setGameStatus] = useState("En curso");
+  const [gameMessage, setGameMessage] = useState("");
+  const [diceValue, setDiceValue] = useState(null);
 
+  const rollDice = () => {
+    const value = Math.floor(Math.random() * 4) + 1; // 1..4
+    setDiceValue(value);
+    console.log("Dado:", value);
+
+    if (value === 4) {
+      setPosition((prev) => {
+        const next = prev + 1;
+        console.log("Grogu avanza a posición", next);
+        return next;
+      });
+      setGameMessage("Ha salido 4: Grogu ha avanzado una casilla.");
+    } else if (value === 1) {
+      setCookies((prev) => {
+        const next = Math.max(0, prev - 1);
+        console.log("Se ha descargado una galleta. Quedan:", next);
+        return next;
+      });
+      setGameMessage("Ha salido 1: Se ha descargado una galleta.");
+    } else if (value === 2) {
+      setEggs((prev) => {
+        const next = Math.max(0, prev - 1);
+        console.log("Se ha descargado un huevito. Quedan:", next);
+        return next;
+      });
+      setGameMessage("Ha salido 2: Se ha descargado un huevito.");
+    } else if (value === 3) {
+      setFrogs((prev) => {
+        const next = Math.max(0, prev - 1);
+        console.log("Se ha descargado una ranita. Quedan:", next);
+        return next;
+      });
+      setGameMessage("Ha salido 3: Se ha descargado una ranita.");
+    }
+
+    // conservar estado "En curso" por defecto; puedes cambiar la lógica de fin de partida aquí
+    setGameStatus("En curso");
+  };
+
+  const resetGame = () => {
+    setPosition(0);
+    setCookies(3);
+    setEggs(3);
+    setFrogs(3);
+    setGameStatus("En curso");
+    setGameMessage("");
+    setDiceValue(null);
+    console.log("Juego reiniciado");
+  };
 
   return (
     <div>
       <Header />
     <main className="page">
 
-     <Board />
+     <Board position={position}/>
     
 
       <section>
-        <button className="dice">Lanzar Dado</button>
-        <div className="game-status">En curso</div>
+       
+        <Dice rollDice={rollDice} diceValue={diceValue} gameMessage={gameMessage} gameStatus={gameStatus}/>
+         
       </section>
 
       <section className="goods-container">
-        <div className="goods-item">🍪</div>
-        <div className="goods-item">🍪</div>
-        <div className="goods-item">🍪</div>
+      {cookies >= 1 && <div className="goods-item">🍪</div>}
+      {cookies >= 2 && <div className="goods-item">🍪</div>}
+      {cookies >= 3 && <div className="goods-item">🍪</div>}
       </section>
       <section className="goods-container">
-        <div className="goods-item">🥚</div>
-        <div className="goods-item">🥚</div>
-        <div className="goods-item">🥚</div>
+      {eggs >= 1 && <div className="goods-item">🥚</div>}
+      {eggs >= 2 && <div className="goods-item">🥚</div>}
+      {eggs >= 3 && <div className="goods-item">🥚</div>}
       </section>
       <section className="goods-container">
-        <div className="goods-item">🐸</div>
-        <div className="goods-item">🐸</div>
-        <div className="goods-item">🐸</div>
+     {frogs >= 1 && <div className="goods-item">🐸</div>}
+     {frogs >= 2 && <div className="goods-item">🐸</div>}
+     {frogs >= 3 && <div className="goods-item">🐸</div>}
       </section>
       <section>
-        <button className="restart-button">Reiniciar Juego</button>
+        <button className="restart-button"onClick={resetGame} >Reiniciar Juego</button>
       </section>
     </main>
     </div>
