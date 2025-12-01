@@ -1,11 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../styles/App.scss";
 import Header from "./Header";
-import Board from "./layout/Board"
+import Board from "./layout/Board";
 import Dice from "./Dice";
-
-
-
 
 function App() {
   /* DATOS:
@@ -26,7 +23,7 @@ function App() {
   1. Volver a poner los datos a su valor inicial.
   */
 
- // Estado del juego
+  // Estado del juego
   const [position, setPosition] = useState(0);
   const [cookies, setCookies] = useState(3);
   const [eggs, setEggs] = useState(3);
@@ -34,6 +31,29 @@ function App() {
   const [gameStatus, setGameStatus] = useState("En curso");
   const [gameMessage, setGameMessage] = useState("");
   const [diceValue, setDiceValue] = useState(null);
+  const [gameOver, setGameOver] = useState(false);
+
+  useEffect(() => {
+    // No actualizar si el juego ya terminó
+    if (gameOver) return;
+    // Condición de victoria: Grogu llega al final (posición 5)
+    if (position === 5) {
+      setGameStatus("Ganaste, Mando completa la misión");
+      setGameMessage("¡Grogu ha llegado al final del tablero!");
+      setGameOver(true);
+    }
+    // Condición de derrota: todas las mercancías se han recogido
+    else if (cookies === 0 && eggs === 0 && frogs === 0) {
+      setGameStatus("¡¡Grogu se ha comido el cargamento!! Has perdido");
+      setGameMessage("Todas las mercancías han sido recogidas/comidas");
+      setGameOver(true);
+    }
+    // En caso contrario, el juego continúa
+    else {
+      setGameStatus("En curso");
+      setGameMessage("");
+    }
+  }, [position, cookies, eggs, frogs, gameOver]);
 
   const rollDice = () => {
     const value = Math.floor(Math.random() * 4) + 1; // 1..4
@@ -71,7 +91,6 @@ function App() {
     }
 
     // conservar estado "En curso" por defecto; puedes cambiar la lógica de fin de partida aquí
-    setGameStatus("En curso");
   };
 
   const resetGame = () => {
@@ -82,44 +101,47 @@ function App() {
     setGameStatus("En curso");
     setGameMessage("");
     setDiceValue(null);
+    setGameOver(false);
     console.log("Juego reiniciado");
   };
 
   return (
     <div>
       <Header />
-    <main className="page">
+      <main className="page">
+        <Board position={position} />
 
-     <Board position={position}/>
-    
+        <section>
+          <Dice
+            rollDice={rollDice}
+            diceValue={diceValue}
+            gameMessage={gameMessage}
+            gameStatus={gameStatus}
+          />
+        </section>
 
-      <section>
-       
-        <Dice rollDice={rollDice} diceValue={diceValue} gameMessage={gameMessage} gameStatus={gameStatus}/>
-         
-      </section>
-
-      <section className="goods-container">
-      {cookies >= 1 && <div className="goods-item">🍪</div>}
-      {cookies >= 2 && <div className="goods-item">🍪</div>}
-      {cookies >= 3 && <div className="goods-item">🍪</div>}
-      </section>
-      <section className="goods-container">
-      {eggs >= 1 && <div className="goods-item">🥚</div>}
-      {eggs >= 2 && <div className="goods-item">🥚</div>}
-      {eggs >= 3 && <div className="goods-item">🥚</div>}
-      </section>
-      <section className="goods-container">
-     {frogs >= 1 && <div className="goods-item">🐸</div>}
-     {frogs >= 2 && <div className="goods-item">🐸</div>}
-     {frogs >= 3 && <div className="goods-item">🐸</div>}
-      </section>
-      <section>
-        <button className="restart-button"onClick={resetGame} >Reiniciar Juego</button>
-      </section>
-    </main>
+        <section className="goods-container">
+          {cookies >= 1 && <div className="goods-item">🍪</div>}
+          {cookies >= 2 && <div className="goods-item">🍪</div>}
+          {cookies >= 3 && <div className="goods-item">🍪</div>}
+        </section>
+        <section className="goods-container">
+          {eggs >= 1 && <div className="goods-item">🥚</div>}
+          {eggs >= 2 && <div className="goods-item">🥚</div>}
+          {eggs >= 3 && <div className="goods-item">🥚</div>}
+        </section>
+        <section className="goods-container">
+          {frogs >= 1 && <div className="goods-item">🐸</div>}
+          {frogs >= 2 && <div className="goods-item">🐸</div>}
+          {frogs >= 3 && <div className="goods-item">🐸</div>}
+        </section>
+        <section>
+          <button className="restart-button" onClick={resetGame}>
+            Reiniciar Juego
+          </button>
+        </section>
+      </main>
     </div>
-    
   );
 }
 

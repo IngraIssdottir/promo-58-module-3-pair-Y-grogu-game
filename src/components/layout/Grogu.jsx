@@ -1,8 +1,4 @@
 function Grogu() {
-return (
-
-<div className="grogu">👣</div>
-
-);
-};
+  return <div className="grogu">👣</div>;
+}
 export default Grogu;
