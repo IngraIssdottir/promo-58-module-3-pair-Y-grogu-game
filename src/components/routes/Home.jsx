@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Header from "../Header";
 import Board from "../layout/Board";
 import Dice from "../Dice";
+import Form from "../Form";
 
 function Home() {
   // Estado del juego
@@ -13,6 +14,7 @@ function Home() {
   const [gameMessage, setGameMessage] = useState("");
   const [diceValue, setDiceValue] = useState(null);
   const [gameOver, setGameOver] = useState(false);
+  const [name, setName] = useState("");
 
   useEffect(() => {
     if (gameOver) return;
@@ -72,9 +74,11 @@ function Home() {
             diceValue={diceValue}
             gameMessage={gameMessage}
             gameStatus={gameStatus}
+            name={name}
           />
         </section>
 
+        <Form name={name} setName={setName} />
         <section className="goods-container">
           {cookies >= 1 && <div className="goods-item">🍪</div>}
           {cookies >= 2 && <div className="goods-item">🍪</div>}
